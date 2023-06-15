@@ -15,6 +15,7 @@ This action will bump version, tag commit and generate a changelog with conventi
 - **Optional** `git-path`: Path filter for the logs. If set, only commits that match the path filter will be considered. By default, we won't use this feature(empty string).
 - **Optional** `preset`: Preset that is used from conventional commits. Default `angular`.
 - **Optional** `tag-prefix`: Prefix for the git tags. Default `v`.
+- **Optional** `input-file`: Read the changelog from this file. This will prepend the newly generated changelogs to the file's content. This has no effect if `release-count` is set to `0`.
 - **Optional** `output-file`: File to output the changelog to. Default `CHANGELOG.md`, when providing `'false'` no file will be generated / updated.
 - **Optional** `release-count`: Number of releases to preserve in changelog. Default `5`, use `0` to regenerate all.
 - **Optional** `version-file`: The path to the file that contains the version to bump (supports comma-separated list of file paths). Default `./package.json`.

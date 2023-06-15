@@ -1,4 +1,5 @@
 const fs = require('fs')
+const { Readable } = require('stream');
 const conventionalChangelog = require('conventional-changelog')
 
 /**
@@ -18,7 +19,7 @@ const getChangelogStream = (tagPrefix, preset, version, releaseCount, config, gi
     releaseCount: parseInt(releaseCount, 10),
     tagPrefix,
     config,
-    skipUnstable
+    skipUnstable,
   },
   {
     version,
@@ -67,12 +68,48 @@ module.exports.generateStringChangelog = (tagPrefix, preset, version, releaseCou
  * @param releaseCount
  * @param config
  * @param gitPath
+ * @param infile
  * @returns {Promise<>}
  */
-module.exports.generateFileChangelog = (tagPrefix, preset, version, fileName, releaseCount, config, gitPath) => new Promise((resolve) => {
+module.exports.generateFileChangelog = (tagPrefix, preset, version, fileName, releaseCount, config, gitPath, infile) => new Promise((resolve) => {
   const changelogStream = getChangelogStream(tagPrefix, preset, version, releaseCount, config, gitPath)
 
-  changelogStream
-    .pipe(fs.createWriteStream(fileName))
-    .on('finish', resolve)
+  // The default changelog output to be streamed first
+  const readStreams = [changelogStream]
+
+  // If an input-file is provided and release count is not 0
+  if (infile && releaseCount !== 0) {
+    // The infile is read synchronously to avoid repeatedly reading newly written content while it is being written
+    const buffer = fs.readFileSync(infile);
+    const readableStream = Readable.from(buffer);
+    // We add the stream as the next item for later pipe
+    readStreams.push(readableStream)
+  }
+
+  const writeStream = fs.createWriteStream(fileName, { flags: 'r+' })
+
+  let currentIndex = 0;
+
+  function pipeNextStream() {
+    if (currentIndex < readStreams.length) {
+      const currentStream = readStreams[currentIndex];
+
+      // currentStream.on('error', reject);
+
+      currentStream.pipe(writeStream, { end: false });
+
+      currentStream.once('end', () => {
+        currentIndex++;
+        pipeNextStream();
+      });
+    } else {
+      // All stream pipes have completed
+      writeStream.end();
+      resolve();
+    }
+  }
+  // writeStream.on('error', reject);
+
+  pipeNextStream();
+
 })
