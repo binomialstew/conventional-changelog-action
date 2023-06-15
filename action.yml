@@ -1,6 +1,6 @@
-name: "Conventional Changelog Action"
+name: "Conventional Changelog Action - With input-file"
 description: "Bump version, tag commit and generates changelog with conventional commits."
-author: "Tycho Bokdam"
+author: "Charles Lehnert"
 
 runs:
   using: "node16"
