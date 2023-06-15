@@ -46,6 +46,7 @@ async function run() {
     const preChangelogGenerationFile = core.getInput('pre-changelog-generation')
     const gitUrl = core.getInput('git-url')
     const gitPath = core.getInput('git-path')
+    const infile = core.getInput('input-file')
     const skipCi = core.getBooleanInput('skip-ci')
     const createSummary = core.getBooleanInput('create-summary')
     const prerelease = core.getBooleanInput('pre-release')
@@ -66,6 +67,7 @@ async function run() {
     core.info(`Using "${conventionalConfigFile}" as config file`)
     core.info(`Using "${gitUrl}" as gitUrl`)
     core.info(`Using "${gitBranch}" as gitBranch`)
+    core.info(`Using "${infile}" as infile`)
     core.info(`Using "${gitPath}" as gitPath`)
 
     if (preCommitFile) {
@@ -153,7 +155,7 @@ async function run() {
       }
 
       // Generate the string changelog
-      const stringChangelog = await changelog.generateStringChangelog(tagPrefix, preset, newVersion, 1, config, gitPath, !prerelease)
+      const stringChangelog = await changelog.generateStringChangelog(tagPrefix, preset, newVersion, 1, config, gitPath, infile, !prerelease)
       core.info('Changelog generated')
       core.info(stringChangelog)
 
@@ -172,7 +174,7 @@ async function run() {
       // If output file === 'false' we don't write it to file
       if (outputFile !== 'false') {
         // Generate the changelog
-        await changelog.generateFileChangelog(tagPrefix, preset, newVersion, outputFile, releaseCount, config, gitPath)
+        await changelog.generateFileChangelog(tagPrefix, preset, newVersion, outputFile, releaseCount, config, gitPath, infile)
       }
 
       if (!skipCommit) {

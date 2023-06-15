@@ -10,15 +10,17 @@ const conventionalChangelog = require('conventional-changelog')
  * @param releaseCount
  * @param config
  * @param gitPath
+ * @param infile
  * @param skipUnstable
  * @returns {*}
  */
-const getChangelogStream = (tagPrefix, preset, version, releaseCount, config, gitPath, skipUnstable) => conventionalChangelog({
+const getChangelogStream = (tagPrefix, preset, version, releaseCount, config, gitPath, infile, skipUnstable) => conventionalChangelog({
     preset,
     releaseCount: parseInt(releaseCount, 10),
     tagPrefix,
     config,
-    skipUnstable
+    skipUnstable,
+    infile,
   },
   {
     version,
@@ -42,11 +44,12 @@ module.exports = getChangelogStream
  * @param releaseCount
  * @param config
  * @param gitPath
+ * @param infile
  * @param skipUnstable
  * @returns {Promise<string>}
  */
-module.exports.generateStringChangelog = (tagPrefix, preset, version, releaseCount, config, gitPath, skipUnstable) => new Promise((resolve, reject) => {
-  const changelogStream = getChangelogStream(tagPrefix, preset, version, releaseCount, config, gitPath, skipUnstable)
+module.exports.generateStringChangelog = (tagPrefix, preset, version, releaseCount, config, gitPath, infile, skipUnstable) => new Promise((resolve, reject) => {
+  const changelogStream = getChangelogStream(tagPrefix, preset, version, releaseCount, config, gitPath, infile, skipUnstable)
 
   let changelog = ''
 
@@ -67,10 +70,11 @@ module.exports.generateStringChangelog = (tagPrefix, preset, version, releaseCou
  * @param releaseCount
  * @param config
  * @param gitPath
+ * @param infile
  * @returns {Promise<>}
  */
-module.exports.generateFileChangelog = (tagPrefix, preset, version, fileName, releaseCount, config, gitPath) => new Promise((resolve) => {
-  const changelogStream = getChangelogStream(tagPrefix, preset, version, releaseCount, config, gitPath)
+module.exports.generateFileChangelog = (tagPrefix, preset, version, fileName, releaseCount, config, gitPath, infile) => new Promise((resolve) => {
+  const changelogStream = getChangelogStream(tagPrefix, preset, version, releaseCount, config, gitPath, infile)
 
   changelogStream
     .pipe(fs.createWriteStream(fileName))

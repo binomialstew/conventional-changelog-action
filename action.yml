@@ -56,6 +56,10 @@ inputs:
     default: "v"
     required: false
 
+  input-file:
+    description: "Read the changelog from this file. This will prepend the newly generated changelogs to the file's content"
+    required: false
+
   output-file:
     description: "File to output the changelog to"
     default: "CHANGELOG.md"
