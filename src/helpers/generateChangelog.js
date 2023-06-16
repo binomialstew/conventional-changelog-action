@@ -72,13 +72,13 @@ module.exports.generateStringChangelog = (tagPrefix, preset, version, releaseCou
  * @returns {Promise<>}
  */
 module.exports.generateFileChangelog = (tagPrefix, preset, version, fileName, releaseCount, config, gitPath, infile) => new Promise((resolve) => {
-  const changelogStream = getChangelogStream(tagPrefix, preset, version, releaseCount, config, gitPath)
+  const changelogStream = getChangelogStream(tagPrefix, preset, version, infile ? 1 : releaseCount, config, gitPath)
 
   // The default changelog output to be streamed first
   const readStreams = [changelogStream]
 
   // If an input-file is provided and release count is not 0
-  if (infile && releaseCount !== 0) {
+  if (infile) {
     // The infile is read synchronously to avoid repeatedly reading newly written content while it is being written
     const buffer = fs.readFileSync(infile);
     const readableStream = Readable.from(buffer);
