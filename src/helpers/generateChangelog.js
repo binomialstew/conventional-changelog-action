@@ -86,7 +86,7 @@ module.exports.generateFileChangelog = (tagPrefix, preset, version, fileName, re
     readStreams.push(readableStream)
   }
 
-  const writeStream = fs.createWriteStream(fileName, { flags: 'r+' })
+  const writeStream = fs.createWriteStream(fileName)
 
   let currentIndex = 0;
 
